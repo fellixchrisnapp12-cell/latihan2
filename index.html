@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Bawang Merah</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+   
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">OPI <span>evja</span></div>
+            <nav>
+                <ul>
+                    <li><i class="fas fa-user"></i> Profil</li>
+                    <li class="active"><i class="fas fa-th-large"></i> Dashboard</li>
+                    <li><i class="fas fa-database"></i> Riwayat Data</li>
+                    <li><i class="fas fa-chart-line"></i> Grafik</li>
+                    <li><i class="fas fa-bell"></i> Notifikasi</li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <div class="header-info">
+                    <h1>Dashboard Monitoring</h1>
+                    <p>Home / Dashboard Penyiraman Bawang Merah</p>
+                </div>
+                <div class="status-bar">
+                    <span id="current-time">Memuat waktu...</span>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <div class="card card-green">
+                    <div class="card-icon"><i class="fas fa-thermometer-half"></i></div>
+                    <div class="card-data">
+                        <h2 id="suhu">0</h2>
+                        <span>Suhu (°C)</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-tint"></i></div>
+                    <div class="card-data">
+                        <h2 id="ph-air">0</h2>
+                        <span>pH Air</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-seedling"></i></div>
+                    <div class="card-data">
+                        <h2 id="kelembapan">0</h2>
+                        <span>Kelembapan Tanah (%)</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-sun"></i></div>
+                    <div class="card-data">
+                        <h2 id="panel-watt">0 W</h2>
+                        <span class="label">Panel Surya</span>
+                        <div class="sub-data">
+                            <small id="panel-volt">0 V</small> | 
+                            <small id="panel-ampere">0 A</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-battery-three-quarters"></i></div>
+                    <div class="card-data">
+                        <h2 id="baterai-persen">0 %</h2>
+                        <span class="label">Status Baterai</span>
+                        <div class="sub-data">
+                            <small id="baterai-volt">0 V (Input)</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<script src="app.js"></script>
+
+    <script src="app.js"></script>
+</body>
+</html>
