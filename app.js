@@ -1,19 +1,20 @@
-// Konfigurasi Firebase (Dapatkan dari Firebase Console > Project Settings)
+// 1. KONFIGURASI FIREBASE
 const firebaseConfig = {
-  apiKey: "AIzaSyBft8FA2rTVZG3AkSu63Bk86FCPNvKC_hA",
-  authDomain: "latihan2-f2b0f.firebaseapp.com",
-  databaseURL: "https://latihan2-f2b0f-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "latihan2-f2b0f",
-  storageBucket: "latihan2-f2b0f.firebasestorage.app",
-  messagingSenderId: "33212839471",
-  appId: "1:33212839471:web:8f6f5d79785dfdfd2438da"
+    apiKey: "AIzaSyBft8FA2rTVZG3AkSu63Bk86FCPNvKC_hA",
+    authDomain: "latihan2-f2b0f.firebaseapp.com",
+    databaseURL: "https://latihan2-f2b0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "latihan2-f2b0f",
+    storageBucket: "latihan2-f2b0f.firebasestorage.app",
+    messagingSenderId: "33212839471",
+    appId: "1:33212839471:web:8f6f5d79785dfdfd2438da"
 };
 
-// Inisialisasi Firebase
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const database = firebase.database();
 
-// Caching elemen DOM
+// 2. ELEMEN GLOBAL
 const elements = {
     suhu: document.getElementById('suhu'),
     phAir: document.getElementById('ph-air'),
@@ -23,17 +24,38 @@ const elements = {
     panelAmpere: document.getElementById('panel-ampere'),
     bateraiPersen: document.getElementById('baterai-persen'),
     bateraiVolt: document.getElementById('baterai-volt'),
-    time: document.getElementById('current-time')
+    time: document.getElementById('current-time'),
+    // Elemen Navigasi
+    btnDashboard: document.getElementById('btn-dashboard'),
+    btnRiwayat: document.getElementById('btn-riwayat'),
+    kontenDashboard: document.getElementById('konten-dashboard'),
+    kontenRiwayat: document.getElementById('konten-riwayat'),
+    tabelRiwayat: document.getElementById('isi-tabel-riwayat')
 };
 
-// Fungsi untuk mengambil data dari Firebase secara Real-time
+// 3. LOGIKA NAVIGASI
+function setupNavigation() {
+    elements.btnRiwayat.addEventListener('click', () => {
+        elements.kontenDashboard.style.display = 'none';
+        elements.kontenRiwayat.style.display = 'block';
+        elements.btnRiwayat.classList.add('active');
+        elements.btnDashboard.classList.remove('active');
+        muatRiwayat();
+    });
+
+    elements.btnDashboard.addEventListener('click', () => {
+        elements.kontenDashboard.style.display = 'block';
+        elements.kontenRiwayat.style.display = 'none';
+        elements.btnDashboard.classList.add('active');
+        elements.btnRiwayat.classList.remove('active');
+    });
+}
+
+// 4. FUNGSI DATA (REAL-TIME & RIWAYAT)
 function listenToData() {
-    const dataRef = database.ref('monitoring'); // Mengarah ke node 'monitoring' di Firebase
-    
-    dataRef.on('value', (snapshot) => {
+    database.ref('monitoring').on('value', (snapshot) => {
         const data = snapshot.val();
         if (data) {
-            // Update UI dengan data asli dari Firebase
             elements.suhu.innerText = data.suhu;
             elements.phAir.innerText = data.phAir;
             elements.kelembapan.innerText = data.kelembapan;
@@ -43,45 +65,68 @@ function listenToData() {
             elements.bateraiPersen.innerText = data.bateraiPersen + " %";
             elements.bateraiVolt.innerText = data.bateraiVolt + " V (Input)";
         }
-    }, (error) => {
-        console.error("Gagal membaca data:", error);
     });
 }
 
-// Update waktu tetap menggunakan jam lokal browser
+function muatRiwayat() {
+    const tgl = new Date().toISOString().split('T')[0];
+    database.ref(`logs/${tgl}`).limitToLast(10).on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            let html = '';
+            const keys = Object.keys(data).reverse();
+            keys.forEach(waktu => {
+                const item = data[waktu];
+                const jam = waktu.match(/.{1,2}/g).join(':');
+                html += `
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #eee;">${jam}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.suhu}°C</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.phAir}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.kelembapan}%</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.panelWatt}W</td>
+                    </tr>`;
+            });
+            elements.tabelRiwayat.innerHTML = html;
+        } else {
+            elements.tabelRiwayat.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Belum ada data riwayat hari ini.</td></tr>';
+        }
+    });
+}
+
+// 5. SIMULASI & WAKTU
+function startSimulasi() {
+    setInterval(() => {
+        const sekarang = new Date();
+        const tgl = sekarang.toISOString().split('T')[0];
+        const wkt = sekarang.toTimeString().split(' ')[0].replace(/:/g, '');
+
+        const dataFiktif = {
+            suhu: (25 + Math.random() * 7).toFixed(1),
+            phAir: (6.0 + Math.random() * 0.8).toFixed(1),
+            kelembapan: Math.floor(65 + Math.random() * 15),
+            panelWatt: (50 + Math.random() * 20).toFixed(1),
+            panelVolt: (12.2 + Math.random() * 1).toFixed(1),
+            panelAmpere: (3.0 + Math.random() * 1).toFixed(2),
+            bateraiPersen: Math.floor(85 + Math.random() * 10),
+            bateraiVolt: (12.8 + Math.random() * 0.5).toFixed(1)
+        };
+
+        database.ref('monitoring').set(dataFiktif);
+        database.ref(`logs/${tgl}/${wkt}`).set(dataFiktif);
+    }, 5000);
+}
+
 function updateTime() {
-    const now = new Date();
-    elements.time.innerText = now.toLocaleString('id-ID');
+    setInterval(() => {
+        elements.time.innerText = new Date().toLocaleString('id-ID');
+    }, 1000);
 }
 
-// Jalankan aplikasi
+// 6. INITIALIZE
 document.addEventListener('DOMContentLoaded', () => {
-    listenToData(); // Dengarkan perubahan data di Firebase
-    setInterval(updateTime, 1000);
+    setupNavigation();
+    listenToData();
+    updateTime();
+    startSimulasi();
 });
-
-// --- FUNGSI SIMULASI KIRIM DATA (Seolah-olah dari Sensor) ---
-function simulasiKirimData() {
-    const dataFiktif = {
-        // Suhu bawang merah idealnya 25-32°C
-        suhu: (26 + Math.random() * 6).toFixed(1), 
-        // pH air ideal 5.5 - 6.5
-        phAir: (5.8 + Math.random() * 1).toFixed(1),
-        // Kelembapan tanah ideal 60-70%
-        kelembapan: Math.floor(60 + Math.random() * 20),
-        // Data Panel Surya & Baterai
-        panelWatt: (40 + Math.random() * 30).toFixed(1),
-        panelVolt: (12 + Math.random() * 2).toFixed(1),
-        panelAmpere: (2 + Math.random() * 2).toFixed(2),
-        bateraiPersen: Math.floor(80 + Math.random() * 20),
-        bateraiVolt: (12.4 + Math.random() * 1).toFixed(1)
-    };
-
-    // Kirim ke Firebase di node 'monitoring'
-    database.ref('monitoring').set(dataFiktif)
-        .then(() => console.log("Data Simulasi Terkirim:", dataFiktif))
-        .catch((error) => console.error("Gagal kirim:", error));
-}
-
-// Jalankan simulasi setiap 5 detik
-setInterval(simulasiKirimData, 5000);
