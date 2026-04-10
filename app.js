@@ -232,3 +232,29 @@ function muatGrafik() {
         }
     });
 }   
+document.getElementById('btn-download-pdf').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Ambil tanggal hari ini untuk judul
+    const tgl = new Date().toLocaleDateString('id-ID');
+
+    // Header PDF
+    doc.setFontSize(18);
+    doc.text('Laporan Monitoring Bawang Merah - OPI evja', 14, 22);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Tanggal Laporan: ${tgl}`, 14, 30);
+
+    // Ambil data dari tabel HTML
+    doc.autoTable({
+        html: '#konten-riwayat table', // Mengambil id tabel
+        startY: 40,
+        theme: 'grid',
+        headStyles: { fillColor: [39, 174, 96] }, // Warna hijau tema kamu
+        styles: { fontSize: 10, cellPadding: 3 },
+    });
+
+    // Download filenya
+    doc.save(`Laporan_Monitoring_${tgl.replace(/\//g, '-')}.pdf`);
+});

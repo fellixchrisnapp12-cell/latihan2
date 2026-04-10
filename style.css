@@ -297,3 +297,40 @@ header {
 #card-pompa[style*="background-color: #2ecc71"] .card-icon i {
     color: white !important;
 }
+/* --- Bagian Tombol Download PDF --- */
+
+#btn-download-pdf {
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #e74c3c; /* Warna merah PDF */
+    border: none;
+    cursor: pointer;
+}
+
+#btn-download-pdf:hover {
+    background: #c0392b !important;
+    transform: translateY(-2px); /* Efek sedikit naik saat disentuh */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#btn-download-pdf:active {
+    transform: translateY(0); /* Efek membal saat diklik */
+}
+
+/* Penyesuaian tampilan di Handphone */
+@media (max-width: 600px) {
+    #btn-download-pdf {
+        width: 100%;           /* Tombol jadi lebar penuh di HP */
+        justify-content: center;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    /* Pastikan kontainer tombol di HP tidak ada jarak aneh */
+    #konten-riwayat div[style*="justify-content: flex-end"] {
+        justify-content: center !important;
+        padding: 10px !important;
+    }
+}
