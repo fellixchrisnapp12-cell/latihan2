@@ -26,6 +26,8 @@ const elements = {
     bateraiPersen: document.getElementById('baterai-persen'),
     bateraiVolt: document.getElementById('baterai-volt'),
     time: document.getElementById('current-time'),
+    statusPompa: document.getElementById('status-pompa'),
+    cardPompa: document.getElementById('card-pompa'),
     // Penambahan untuk navigasi
     btnDashboard: document.getElementById('btn-dashboard'),
     btnRiwayat: document.getElementById('btn-riwayat'),
@@ -34,6 +36,7 @@ const elements = {
     kontenRiwayat: document.getElementById('konten-riwayat'),
     kontenGrafik: document.getElementById('konten-grafik'),
     tabelRiwayat: document.getElementById('isi-tabel-riwayat')
+    
 }; // <--- Pastikan ada titik koma di sini
 
 // Tambahkan ini tepat di bawah kurung tutup elements di atas
@@ -81,6 +84,20 @@ function listenToData() {
             elements.panelAmpere.innerText = data.panelAmpere + " A";
             elements.bateraiPersen.innerText = data.bateraiPersen + " %";
             elements.bateraiVolt.innerText = data.bateraiVolt + " V (Input)";
+            if (data) {
+            // ... (kode suhu, ph, dll yang sudah ada) ...
+            
+            // Logika Status Pompa
+            if (data.pompa === "ON" || data.pompa === 1 || data.pompa === true) {
+                elements.statusPompa.innerText = "NYALA";
+                elements.cardPompa.style.backgroundColor = "#2ecc71"; // Hijau saat nyala
+                elements.statusPompa.style.color = "white";
+            } else {
+                elements.statusPompa.innerText = "MATI";
+                elements.cardPompa.style.backgroundColor = "white"; // Kembali putih saat mati
+                elements.statusPompa.style.color = "#2c3e50";
+            }
+        }
         }
     });
 }
@@ -95,6 +112,13 @@ function muatRiwayat() {
             keys.forEach(waktu => {
                 const item = data[waktu];
                 const jam = waktu.match(/.{1,2}/g).join(':');
+
+                // 1. Ambil status pompa (default OFF jika tidak ada data)
+                const statusPompa = item.pompa || "OFF";
+                
+                // 2. Tentukan warna status (Hijau untuk ON, Merah untuk OFF)
+                const warnaStatus = statusPompa === "ON" ? "#2ecc71" : "#e74c3c";
+
                 html += `
                     <tr>
                         <td style="padding: 12px; border-bottom: 1px solid #eee;">${jam}</td>
@@ -102,11 +126,13 @@ function muatRiwayat() {
                         <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.phAir}</td>
                         <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.kelembapan}%</td>
                         <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.panelWatt}W</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #eee; color: ${warnaStatus}; font-weight: bold;">${statusPompa}</td>
                     </tr>`;
             });
             elements.tabelRiwayat.innerHTML = html;
         } else {
-            elements.tabelRiwayat.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Belum ada data riwayat hari ini.</td></tr>';
+            // Update colspan menjadi 6 karena sekarang ada 6 kolom
+            elements.tabelRiwayat.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Belum ada data riwayat hari ini.</td></tr>';
         }
     });
 }
@@ -126,12 +152,15 @@ function startSimulasi() {
             panelVolt: (12.2 + Math.random() * 1).toFixed(1),
             panelAmpere: (3.0 + Math.random() * 1).toFixed(2),
             bateraiPersen: Math.floor(85 + Math.random() * 10),
-            bateraiVolt: (12.8 + Math.random() * 0.5).toFixed(1)
+            bateraiVolt: (12.8 + Math.random() * 0.5).toFixed(1),
+            // TAMBAHKAN BARIS INI:
+            pompa: Math.random() > 0.5 ? "ON" : "OFF" 
         };
 
+        // Mengupdate Firebase
         database.ref('monitoring').set(dataFiktif);
         database.ref(`logs/${tgl}/${wkt}`).set(dataFiktif);
-    }, 5000);
+    }, 5000); // Update setiap 5 detik
 }
 
 function updateTime() {
@@ -180,12 +209,21 @@ function muatGrafik() {
         if (data) {
             const labels = [], dSuhu = [], dPh = [], dLembap = [], dVolt = [];
             Object.keys(data).forEach(wkt => {
-                labels.push(wkt.match(/.{1,2}/g).join(':'));
-                dSuhu.push(data[wkt].suhu);
-                dPh.push(data[wkt].phAir);
-                dLembap.push(data[wkt].kelembapan);
-                dVolt.push(data[wkt].panelVolt);
-            });
+    const item = data[wkt]; // Mengambil satu baris data berdasarkan waktu
+    
+    // 1. Tambahkan label waktu ke sumbu X grafik
+    labels.push(wkt.match(/.{1,2}/g).join(':'));
+    
+    // 2. Tambahkan data sensor ke variabel grafik masing-masing
+    dSuhu.push(parseFloat(item.suhu) || 0);
+    dPh.push(parseFloat(item.phAir) || 0);
+    dLembap.push(parseFloat(item.kelembapan) || 0);
+    dVolt.push(parseFloat(item.panelVolt) || 0);
+
+    // 3. Tambahkan data pompa (Opsional: Jika ingin digunakan untuk logika lain di halaman grafik)
+    // Kita simpan statusnya, tapi biasanya tidak dimasukkan ke Chart.js yang bertipe garis (Line Chart)
+    const statusPompa = item.pompa || "OFF"; 
+});
 
             chartSuhu.data.labels = labels; chartSuhu.data.datasets[0].data = dSuhu; chartSuhu.update();
             chartPh.data.labels = labels; chartPh.data.datasets[0].data = dPh; chartPh.update();

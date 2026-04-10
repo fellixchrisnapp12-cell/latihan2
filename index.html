@@ -70,32 +70,38 @@
                     </div>
 
                     <div class="card">
-                        <div class="card-icon"><i class="fas fa-battery-three-quarters"></i></div>
-                        <div class="card-data">
-                            <h2 id="baterai-persen">0 %</h2>
-                            <span class="label">Status Baterai</span>
-                            <div class="sub-data">
-                                <small id="baterai-volt">0 V (Input)</small>
-                            </div>
-                        </div>
-                    </div>
+    <div class="card-icon"><i class="fas fa-battery-three-quarters"></i></div>
+    <div class="card-data">
+        <h2 id="baterai-persen">0 %</h2>
+        <span class="label">Status Baterai</span>
+        <div class="sub-data">
+            <small id="baterai-volt">0 V (Input)</small>
+        </div>
+    </div>
+</div> <div class="card" id="card-pompa">
+    <div class="card-icon"><i class="fas fa-faucet"></i></div> 
+    <div class="card-data">
+        <h2 id="status-pompa">MATI</h2>
+        <span>Status Pompa</span>
+    </div>
+</div>
                 </section>
             </div>
 
             <div id="konten-riwayat" style="display: none;">
                 <section class="card full-width" style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <h2 style="margin-bottom: 20px; color: #2c3e50;"><i class="fas fa-history"></i> 10 Data Terakhir</h2>
+    
                     <div style="overflow-x: auto;">
                         <table style="width: 100%; border-collapse: collapse;">
                             <thead>
-                                <tr style="text-align: left; background: #f8f9fa;">
-                                    <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Waktu</th>
-                                    <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Suhu</th>
-                                    <th style="padding: 12px; border-bottom: 2px solid #27ae60;">pH</th>
-                                    <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Tanah</th>
-                                    <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Panel</th>
-                                </tr>
-                            </thead>
+    <tr style="text-align: left; background: #f8f9fa;">
+        <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Waktu</th>
+        <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Suhu</th>
+        <th style="padding: 12px; border-bottom: 2px solid #27ae60;">pH</th>
+        <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Tanah</th>
+        <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Panel</th>
+        <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Pompa</th> </tr>
+</thead>
                             <tbody id="isi-tabel-riwayat">
                                 <tr><td colspan="5" style="text-align:center; padding: 20px;">Memuat data...</td></tr>
                             </tbody>

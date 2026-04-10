@@ -106,6 +106,14 @@ header {
     align-items: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     transition: transform 0.3s;
+    .card {
+    transition: background-color 0.5s ease, transform 0.3s ease;
+}
+
+/* Tambahan agar icon di kartu pompa juga berubah warna saat background jadi hijau */
+#card-pompa.active i {
+    color: white;
+}
 }
 
 .card:hover {
@@ -243,4 +251,49 @@ header {
         font-size: 1.2rem;
         margin-left: 10px;
     }
+}
+/* Menghilangkan ruang kosong di sisi kiri halaman riwayat */
+/* 1. Hilangkan padding pada pembungkus utama Riwayat */
+#konten-riwayat {
+    padding: 0 !important; /* Menghapus jarak di semua sisi */
+    margin: 0 !important;
+    width: 100%;
+}
+
+/* 2. Pastikan kartu pembungkus tabel tidak punya batas jarak (margin/padding) */
+#konten-riwayat .card {
+    width: 100%;
+    max-width: 100%; /* Memastikan tidak terpentok batas maksimal */
+    margin: 0 !important;
+    padding: 0 !important; /* Menghapus padding agar tabel menyentuh pinggir kartu */
+    border-radius: 0; /* Opsional: hilangkan lengkungan pojok agar terlihat lebih penuh */
+    box-shadow: none; /* Opsional: hilangkan bayangan agar terlihat menyatu dengan background */
+}
+
+/* 3. Paksa tabel untuk melebar 100% */
+#konten-riwayat table {
+    width: 100% !important;
+    border-collapse: collapse;
+    margin: 0;
+    table-layout: fixed; /* Membagi kolom secara rata dan paksa memenuhi lebar */
+}
+
+/* 4. Beri sedikit ruang di dalam sel agar teks tidak benar-benar nempel ke layar HP */
+#konten-riwayat th, 
+#konten-riwayat td {
+    padding: 12px 8px; /* Atas-bawah 12px, kiri-kanan 8px */
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    word-wrap: break-word; /* Agar teks panjang tidak merusak lebar tabel */
+}
+/* Memberi warna hijau pada ikon pompa agar segar */
+#card-pompa .card-icon i {
+    color: #2ecc71;
+    font-size: 2rem;
+}
+
+/* Saat pompa NYALA (background hijau), ubah ikon jadi putih */
+#card-pompa[style*="background-color: rgb(46, 204, 113)"] .card-icon i,
+#card-pompa[style*="background-color: #2ecc71"] .card-icon i {
+    color: white !important;
 }
