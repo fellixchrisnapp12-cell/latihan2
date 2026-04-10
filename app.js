@@ -240,8 +240,8 @@ document.getElementById('btn-download-pdf').addEventListener('click', () => {
     const tgl = new Date().toLocaleDateString('id-ID');
 
     // Header PDF
-    doc.setFontSize(18);
-    doc.text('Laporan Monitoring Bawang Merah - OPI evja', 14, 22);
+    doc.setFontSize(16);
+doc.text('LAPORAN MONITORING BIBIT BAWANG MERAH', 14, 20);
     doc.setFontSize(11);
     doc.setTextColor(100);
     doc.text(`Tanggal Laporan: ${tgl}`, 14, 30);
