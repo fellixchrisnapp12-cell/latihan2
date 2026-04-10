@@ -15,6 +15,7 @@ if (!firebase.apps.length) {
 const database = firebase.database();
 
 // 2. ELEMEN GLOBAL
+// 2. AMBIL ELEMEN HTML
 const elements = {
     suhu: document.getElementById('suhu'),
     phAir: document.getElementById('ph-air'),
@@ -25,30 +26,46 @@ const elements = {
     bateraiPersen: document.getElementById('baterai-persen'),
     bateraiVolt: document.getElementById('baterai-volt'),
     time: document.getElementById('current-time'),
-    // Elemen Navigasi
+    // Penambahan untuk navigasi
     btnDashboard: document.getElementById('btn-dashboard'),
     btnRiwayat: document.getElementById('btn-riwayat'),
+    btnGrafik: document.getElementById('btn-grafik'),
     kontenDashboard: document.getElementById('konten-dashboard'),
     kontenRiwayat: document.getElementById('konten-riwayat'),
+    kontenGrafik: document.getElementById('konten-grafik'),
     tabelRiwayat: document.getElementById('isi-tabel-riwayat')
-};
+}; // <--- Pastikan ada titik koma di sini
+
+// Tambahkan ini tepat di bawah kurung tutup elements di atas
+let chartSuhu, chartPh, chartKelembapan, chartVolt;
 
 // 3. LOGIKA NAVIGASI
-function setupNavigation() {
-    elements.btnRiwayat.addEventListener('click', () => {
-        elements.kontenDashboard.style.display = 'none';
-        elements.kontenRiwayat.style.display = 'block';
-        elements.btnRiwayat.classList.add('active');
-        elements.btnDashboard.classList.remove('active');
-        muatRiwayat();
-    });
+function gantiHalaman(halamanAktif, tombolAktif) {
+    // Sembunyikan semua
+    elements.kontenDashboard.style.display = 'none';
+    elements.kontenRiwayat.style.display = 'none';
+    elements.kontenGrafik.style.display = 'none';
+    
+    // Matikan semua warna tombol
+    elements.btnDashboard.classList.remove('active');
+    elements.btnRiwayat.classList.remove('active');
+    elements.btnGrafik.classList.remove('active');
+    
+    // Tampilkan yang dipilih
+    halamanAktif.style.display = 'block';
+    tombolAktif.classList.add('active');
+}
 
-    elements.btnDashboard.addEventListener('click', () => {
-        elements.kontenDashboard.style.display = 'block';
-        elements.kontenRiwayat.style.display = 'none';
-        elements.btnDashboard.classList.add('active');
-        elements.btnRiwayat.classList.remove('active');
-    });
+function setupNavigation() {
+    elements.btnDashboard.onclick = () => gantiHalaman(elements.kontenDashboard, elements.btnDashboard);
+    elements.btnRiwayat.onclick = () => {
+        gantiHalaman(elements.kontenRiwayat, elements.btnRiwayat);
+        muatRiwayat();
+    };
+    elements.btnGrafik.onclick = () => {
+        gantiHalaman(elements.kontenGrafik, elements.btnGrafik);
+        muatGrafik();
+    };
 }
 
 // 4. FUNGSI DATA (REAL-TIME & RIWAYAT)
@@ -130,3 +147,50 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTime();
     startSimulasi();
 });
+function inisialisasiGrafik(idCanvas, label, warna) {
+    const ctx = document.getElementById(idCanvas).getContext('2d');
+    return new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: label,
+                data: [],
+                borderColor: warna,
+                backgroundColor: warna + '33', // Tambah transparansi
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+}
+
+function muatGrafik() {
+    if (!chartSuhu) {
+        chartSuhu = inisialisasiGrafik('grafikSuhu', 'Suhu (°C)', '#e74c3c');
+        chartPh = inisialisasiGrafik('grafikPh', 'pH Air', '#3498db');
+        chartKelembapan = inisialisasiGrafik('grafikKelembapan', 'Kelembapan (%)', '#2ecc71');
+        chartVolt = inisialisasiGrafik('grafikVolt', 'Voltase Panel (V)', '#f1c40f');
+    }
+
+    const tgl = new Date().toISOString().split('T')[0];
+    database.ref(`logs/${tgl}`).limitToLast(15).on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const labels = [], dSuhu = [], dPh = [], dLembap = [], dVolt = [];
+            Object.keys(data).forEach(wkt => {
+                labels.push(wkt.match(/.{1,2}/g).join(':'));
+                dSuhu.push(data[wkt].suhu);
+                dPh.push(data[wkt].phAir);
+                dLembap.push(data[wkt].kelembapan);
+                dVolt.push(data[wkt].panelVolt);
+            });
+
+            chartSuhu.data.labels = labels; chartSuhu.data.datasets[0].data = dSuhu; chartSuhu.update();
+            chartPh.data.labels = labels; chartPh.data.datasets[0].data = dPh; chartPh.update();
+            chartKelembapan.data.labels = labels; chartKelembapan.data.datasets[0].data = dLembap; chartKelembapan.update();
+            chartVolt.data.labels = labels; chartVolt.data.datasets[0].data = dVolt; chartVolt.update();
+        }
+    });
+}   

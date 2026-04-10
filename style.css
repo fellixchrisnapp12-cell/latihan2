@@ -162,3 +162,85 @@ header {
         padding: 15px;
     }
 }
+/* --- RESPONSIVITAS UNTUK HP (Layar di bawah 768px) --- */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Sidebar jadi di atas, konten di bawah */
+    }
+
+    .sidebar {
+        width: 100%; /* Lebar sidebar penuhi layar */
+        padding: 10px;
+        height: auto;
+    }
+
+    .sidebar nav ul {
+        display: flex; /* Menu sidebar jadi berjejer kesamping */
+        justify-content: space-around;
+        padding: 0;
+    }
+
+    .sidebar nav ul li {
+        padding: 10px;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .sidebar nav ul li i {
+        margin-right: 5px;
+    }
+
+    .main-content {
+        padding: 15px; /* Kurangi jarak pinggir agar lega */
+    }
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Kartu jadi 1 kolom saja (tumpuk ke bawah) */
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .status-bar {
+        width: 100%;
+        text-align: center;
+    }
+}
+/* --- GAYA KHUSUS HALAMAN GRAFIK --- */
+
+/* Memastikan kontainer grafik punya ruang yang cukup */
+#konten-grafik {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Mengatur tinggi kotak grafik agar konsisten */
+#konten-grafik .card {
+    background: white;
+    min-height: 300px; /* Tinggi minimal supaya grafik tidak sesak */
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* Responsivitas Grafik di HP */
+@media (max-width: 768px) {
+    #konten-grafik .card {
+        min-height: 250px; /* Sedikit lebih pendek di HP agar tidak terlalu banyak scroll */
+        padding: 10px;
+    }
+    
+    #konten-grafik h2 {
+        font-size: 1.2rem;
+        margin-left: 10px;
+    }
+}
