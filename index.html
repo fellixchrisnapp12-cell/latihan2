@@ -18,22 +18,25 @@
         <span>BIBIT BAWANG MERAH</span>
     </div>
 
-    <nav>
-        <ul>
-            <li id="btn-dashboard" class="active">
-                <i class="fas fa-th-large"></i> Dashboard
-            </li>
-            <li id="btn-riwayat">
-                <i class="fas fa-database"></i> Riwayat Data
-            </li>
-            <li id="btn-grafik">
-                <i class="fas fa-chart-line"></i> Grafik
-                    </li>
-                    <li id="btn-profil">
-    <i class="fas fa-id-card"></i> Profil
-</li>
-        </ul>
-    </nav>
+   <nav>
+    <ul>
+        <li id="btn-dashboard" class="active">
+            <i class="fas fa-th-large"></i> Dashboard
+        </li>
+        <li id="btn-riwayat">
+            <i class="fas fa-database"></i> Riwayat Data
+        </li>
+        <li id="btn-grafik">
+            <i class="fas fa-chart-line"></i> Grafik
+        </li>
+        <li id="btn-profil">
+            <i class="fas fa-id-card"></i> Profil
+        </li>
+        <li id="btn-proteksi">
+            <i class="fas fa-shield-alt"></i> Proteksi
+        </li>
+    </ul>
+</nav>
 </aside>
 
         <main class="main-content">
@@ -100,6 +103,16 @@
         <span>Status Pompa</span>
     </div>
 </div>
+<div class="card">
+    <div class="card-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">
+        <i class="fas fa-bolt"></i>
+    </div>
+    <div class="card-info">
+        <h3 id="pompa-wh">0 Wh</h3>
+        <p>KONSUMSI DAYA</p>
+        <span>Pompa Hari Ini</span>
+    </div>
+</div>
                 </section>
             </div>
 
@@ -115,14 +128,16 @@
     
                     <div style="overflow-x: auto;">
                         <table style="width: 100%; border-collapse: collapse;">
-                            <thead>
+                           <thead>
     <tr style="text-align: left; background: #f8f9fa;">
         <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Waktu</th>
         <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Suhu</th>
         <th style="padding: 12px; border-bottom: 2px solid #27ae60;">pH</th>
         <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Tanah</th>
         <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Panel</th>
-        <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Pompa</th> </tr>
+        <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Pompa</th> 
+        <th style="padding: 12px; border-bottom: 2px solid #27ae60;">Konsumsi</th> 
+    </tr>
 </thead>
                             <tbody id="isi-tabel-riwayat">
                                 <tr><td colspan="5" style="text-align:center; padding: 20px;">Memuat data...</td></tr>
@@ -179,9 +194,34 @@
                             <span>NIM: 2241190018</span>
                         </div>
                     </div>
+                    
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+<div id="konten-proteksi" style="display: none;">
+    <h2 style="margin-bottom: 20px; color: #2c3e50; padding: 0 20px;">Sistem Proteksi (INA226)</h2>
+    
+    <div class="dashboard-grid" id="grid-proteksi">
+        <div class="card" id="card-arus-lebih">
+            <div class="card-info">
+                <h3 id="status-arus-lebih">AMAN</h3>
+                <p>ARUS BERLEBIH</p>
+            </div>
+        </div>
+        <div class="card" id="card-arus-ekstrem">
+            <div class="card-info">
+                <h3 id="status-arus-ekstrem">NORMAL</h3>
+                <p>ARUS EKSTREM</p>
+            </div>
+        </div>
+        <div class="card" id="card-status-bms">
+            <div class="card-info">
+                <h3 id="status-bms">TERHUBUNG</h3>
+                <p>STATUS BATERAI</p>
+            </div>
         </div>
     </div>
 </div>
