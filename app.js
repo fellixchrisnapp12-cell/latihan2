@@ -28,36 +28,61 @@ const elements = {
     time: document.getElementById('current-time'),
     statusPompa: document.getElementById('status-pompa'),
     cardPompa: document.getElementById('card-pompa'),
-    // Penambahan untuk navigasi
     btnDashboard: document.getElementById('btn-dashboard'),
     btnRiwayat: document.getElementById('btn-riwayat'),
     btnGrafik: document.getElementById('btn-grafik'),
     kontenDashboard: document.getElementById('konten-dashboard'),
     kontenRiwayat: document.getElementById('konten-riwayat'),
     kontenGrafik: document.getElementById('konten-grafik'),
-    tabelRiwayat: document.getElementById('isi-tabel-riwayat')
-    
-}; // <--- Pastikan ada titik koma di sini
+    tabelRiwayat: document.getElementById('isi-tabel-riwayat'), // Pastikan ada koma di sini
+    btnProfil: document.getElementById('btn-profil'),           // Tambahkan ini
+    kontenProfil: document.getElementById('konten-profil')      // Baris terakhir tidak wajib koma
+};
 
 // Tambahkan ini tepat di bawah kurung tutup elements di atas
 let chartSuhu, chartPh, chartKelembapan, chartVolt;
 
 // 3. LOGIKA NAVIGASI
 function gantiHalaman(halamanAktif, tombolAktif) {
-    // Sembunyikan semua
+    // Sembunyikan semua (Tambahkan kontenProfil)
     elements.kontenDashboard.style.display = 'none';
     elements.kontenRiwayat.style.display = 'none';
     elements.kontenGrafik.style.display = 'none';
+    elements.kontenProfil.style.display = 'none'; // Tambahan
     
-    // Matikan semua warna tombol
+    // Matikan semua warna tombol (Tambahkan btnProfil)
     elements.btnDashboard.classList.remove('active');
     elements.btnRiwayat.classList.remove('active');
     elements.btnGrafik.classList.remove('active');
+    elements.btnProfil.classList.remove('active'); // Tambahan
     
     // Tampilkan yang dipilih
     halamanAktif.style.display = 'block';
     tombolAktif.classList.add('active');
 }
+// Klik Dashboard
+elements.btnDashboard.addEventListener('click', () => {
+    gantiHalaman(elements.kontenDashboard, elements.btnDashboard);
+    elements.pageTitle.innerText = 'Dashboard Monitoring';
+});
+
+// Klik Riwayat
+elements.btnRiwayat.addEventListener('click', () => {
+    gantiHalaman(elements.kontenRiwayat, elements.btnRiwayat);
+    elements.pageTitle.innerText = 'Riwayat Data';
+});
+
+// Klik Grafik
+elements.btnGrafik.addEventListener('click', () => {
+    gantiHalaman(elements.kontenGrafik, elements.btnGrafik);
+    elements.pageTitle.innerText = 'Grafik Analisis';
+});
+
+// Klik Profil (INI YANG BARU)
+elements.btnProfil.addEventListener('click', () => {
+    gantiHalaman(elements.kontenProfil, elements.btnProfil);
+    elements.pageTitle.innerText = 'Profil Pengembang';
+});
 
 function setupNavigation() {
     elements.btnDashboard.onclick = () => gantiHalaman(elements.kontenDashboard, elements.btnDashboard);

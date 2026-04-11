@@ -342,3 +342,81 @@ header {
         padding: 10px !important;
     }
 }
+/* --- Bagian Profil --- */
+.profile-container {
+    max-width: 700px;
+    margin: 0 auto; /* Supaya posisinya di tengah layar */
+}
+
+.profile-card {
+    padding: 30px;
+    text-align: center;
+}
+
+.profile-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.profile-header h2 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.profile-header p {
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
+.profile-photo img {
+    width: 150px;       /* Ukuran lebar */
+    height: 150px;      /* Ukuran tinggi harus sama agar bulat */
+    border-radius: 50%; /* Membuat jadi bulat */
+    object-fit: cover;  /* PENTING: Agar foto tidak gepeng/tertarik */
+    border: 4px solid #2ecc71; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.team-members {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.member-info {
+    background: #f8f9fa;
+    padding: 15px 25px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-left: 5px solid #2ecc71; /* Garis aksen hijau di kiri */
+    transition: transform 0.3s ease;
+    text-align: left;
+}
+
+.member-info:hover {
+    transform: translateX(5px); /* Efek geser dikit saat disentuh mouse */
+}
+
+.member-info i {
+    font-size: 2rem;
+    color: #2ecc71;
+}
+
+.member-text h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.member-text span {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    font-weight: bold;
+}
