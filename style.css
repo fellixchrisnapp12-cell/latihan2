@@ -343,80 +343,75 @@ header {
     }
 }
 /* --- Bagian Profil --- */
+/* --- Revisi CSS Profil --- */
 .profile-container {
-    max-width: 700px;
-    margin: 0 auto; /* Supaya posisinya di tengah layar */
+    max-width: 500px; /* Diperkecil dari 700px agar tidak terlalu lebar */
+    margin: 10px auto;
 }
 
+/* Pastikan container card menggunakan flex column agar judul di atas */
 .profile-card {
-    padding: 30px;
-    text-align: center;
+    display: flex;
+    flex-direction: column; 
+    align-items: center; /* Semua konten di tengah */
+    padding: 30px 20px;
 }
 
 .profile-header {
-    margin-bottom: 30px;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 15px;
+    width: 100%;
+    margin-bottom: 25px; /* Jarak antara judul dan foto */
+    text-align: center;
 }
 
-.profile-header h2 {
-    color: #2c3e50;
-    font-size: 1.5rem;
-}
-
-.profile-header p {
-    color: #7f8c8d;
-    margin-top: 5px;
+.profile-content {
+    display: flex;
+    flex-direction: column; /* Foto di atas, Name Card di bawahnya */
+    align-items: center;
+    width: 100%;
 }
 
 .profile-photo img {
-    width: 150px;       /* Ukuran lebar */
-    height: 150px;      /* Ukuran tinggi harus sama agar bulat */
-    border-radius: 50%; /* Membuat jadi bulat */
-    object-fit: cover;  /* PENTING: Agar foto tidak gepeng/tertarik */
-    border: 4px solid #2ecc71; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    margin-bottom: 25px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #2ecc71;
+    margin-bottom: 25px; /* Jarak antara foto dan name card */
 }
 
+/* Styling Name Card agar seragam */
 .team-members {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    align-items: center;
+    width: 100%;
+    max-width: 400px; /* Lebar name card agar pas */
 }
 
 .member-info {
     background: #f8f9fa;
-    padding: 15px 25px;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 450px;
+    padding: 12px 20px;
+    border-radius: 12px;
     display: flex;
-    align-items: center;
-    gap: 20px;
-    border-left: 5px solid #2ecc71; /* Garis aksen hijau di kiri */
-    transition: transform 0.3s ease;
-    text-align: left;
-}
-
-.member-info:hover {
-    transform: translateX(5px); /* Efek geser dikit saat disentuh mouse */
+    align-items: center; /* Ikon dan teks sejajar secara vertikal */
+    gap: 15px;
+    border-left: 5px solid #2ecc71;
+    text-align: left; /* Teks rata kiri */
 }
 
 .member-info i {
-    font-size: 2rem;
+    font-size: 1.4rem;
     color: #2ecc71;
 }
 
 .member-text h3 {
-    margin: 0 0 5px 0;
-    font-size: 1.1rem;
+    margin: 0;
+    font-size: 1rem;
     color: #2c3e50;
+    line-height: 1.2;
 }
 
 .member-text span {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #7f8c8d;
-    font-weight: bold;
 }
