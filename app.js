@@ -1,301 +1,225 @@
 // 1. KONFIGURASI FIREBASE
-const firebaseConfig = {
-    apiKey: "AIzaSyBft8FA2rTVZG3AkSu63Bk86FCPNvKC_hA",
-    authDomain: "latihan2-f2b0f.firebaseapp.com",
-    databaseURL: "https://latihan2-f2b0f-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "latihan2-f2b0f",
-    storageBucket: "latihan2-f2b0f.firebasestorage.app",
-    messagingSenderId: "33212839471",
-    appId: "1:33212839471:web:8f6f5d79785dfdfd2438da"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyBft8FA2rTVZG3AkSu63Bk86FCPNvKC_hA",
+        authDomain: "latihan2-f2b0f.firebaseapp.com",
+        databaseURL: "https://latihan2-f2b0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "latihan2-f2b0f",
+        storageBucket: "latihan2-f2b0f.firebasestorage.app",
+        messagingSenderId: "33212839471",
+        appId: "1:33212839471:web:8f6f5d79785dfdfd2438da"
+    };
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const database = firebase.database();
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
 
-// 2. ELEMEN GLOBAL
-// 2. AMBIL ELEMEN HTML
-const elements = {
-    suhu: document.getElementById('suhu'),
-    phAir: document.getElementById('ph-air'),
-    kelembapan: document.getElementById('kelembapan'),
-    panelWatt: document.getElementById('panel-watt'),
-    panelVolt: document.getElementById('panel-volt'),
-    panelAmpere: document.getElementById('panel-ampere'),
-    bateraiPersen: document.getElementById('baterai-persen'),
-    bateraiVolt: document.getElementById('baterai-volt'),
-    time: document.getElementById('current-time'),
-    statusPompa: document.getElementById('status-pompa'),
-    cardPompa: document.getElementById('card-pompa'),
-    btnDashboard: document.getElementById('btn-dashboard'),
-    btnRiwayat: document.getElementById('btn-riwayat'),
-    btnGrafik: document.getElementById('btn-grafik'),
-    kontenDashboard: document.getElementById('konten-dashboard'),
-    kontenRiwayat: document.getElementById('konten-riwayat'),
-    kontenGrafik: document.getElementById('konten-grafik'),
-    tabelRiwayat: document.getElementById('isi-tabel-riwayat'), // Pastikan ada koma di sini
-    btnProfil: document.getElementById('btn-profil'),           // Tambahkan ini
-    kontenProfil: document.getElementById('konten-profil'),
-    pompaWh: document.getElementById('pompa-wh'),   // Baris terakhir tidak wajib koma
-    btnProteksi: document.getElementById('btn-proteksi'),
-    kontenProteksi: document.getElementById('konten-proteksi'),
-    statusArusLebih: document.getElementById('status-arus-lebih'),
-    cardArusLebih: document.getElementById('card-arus-lebih'),
-    statusArusEkstrem: document.getElementById('status-arus-ekstrem'),
-    cardArusEkstrem: document.getElementById('card-arus-ekstrem'),
-    statusBms: document.getElementById('status-bms'),
-    cardBms: document.getElementById('card-status-bms')
-};
+    // 2. AMBIL ELEMEN HTML
+    const elements = {
+        suhu: document.getElementById('suhu'),
+        phAir: document.getElementById('ph-air'),
+        kelembapan1: document.getElementById('kelembapan1'),
+        kelembapan2: document.getElementById('kelembapan2'),
+        lux: document.getElementById('lux'),
+        bateraiPersen: document.getElementById('baterai-persen'),
+        bateraiVolt: document.getElementById('baterai-volt'),
+        time: document.getElementById('current-time'),
+        statusPompa: document.getElementById('status-pompa'),
+        cardPompa: document.getElementById('card-pompa'),
+        btnDashboard: document.getElementById('btn-dashboard'),
+        btnPompa: document.getElementById('btn-pompa'),
+        btnRiwayat: document.getElementById('btn-riwayat'),
+        btnGrafik: document.getElementById('btn-grafik'),
+        kontenDashboard: document.getElementById('konten-dashboard'),
+        kontenPompa: document.getElementById('konten-pompa'),
+        kontenRiwayat: document.getElementById('konten-riwayat'),
+        kontenGrafik: document.getElementById('konten-grafik'),
+        tabelRiwayat: document.getElementById('isi-tabel-riwayat'),
+        btnProfil: document.getElementById('btn-profil'),
+        kontenProfil: document.getElementById('konten-profil'),
+        pompaWh: document.getElementById('pompa-wh'),
+        btnProteksi: document.getElementById('btn-proteksi'),
+        kontenProteksi: document.getElementById('konten-proteksi'),
+        dayaAktifPompa: document.getElementById('daya-aktif-pompa'),
+        detailKelistrikan: document.getElementById('detail-kelistrikan'),
+        inputTanggal: document.getElementById('tanggal-riwayat'),
+        frekuensiAir: document.getElementById('frekuensi-air'),
+        lajuAliran: document.getElementById('laju-aliran'),
+        debitAir: document.getElementById('debit-air'),
+        // ELEMEN PROTEKSI BARU
+        statusArusEkstrem: document.getElementById('status-arus-ekstrem'),
+        cardArusEkstrem: document.getElementById('card-arus-ekstrem'),
+        statusPeringatanBaterai: document.getElementById('status-peringatan-baterai'),
+        cardPeringatanBaterai: document.getElementById('card-peringatan-baterai'),
+        statusBms: document.getElementById('status-bms'),
+        cardStatusBms: document.getElementById('card-status-bms')
+    };
 
-// Tambahkan ini tepat di bawah kurung tutup elements di atas
-let chartSuhu, chartPh, chartKelembapan, chartVolt;
+let chartSuhu, chartPh, chartKelembapan, chartKelembapan2, chartLux, chartVolt;
 
 // 3. LOGIKA NAVIGASI
 function gantiHalaman(halamanAktif, tombolAktif) {
-    // 1. Sembunyikan SEMUA container secara paksa
     const semuaKonten = [
         elements.kontenDashboard, 
+        elements.kontenPompa, 
         elements.kontenRiwayat, 
         elements.kontenGrafik, 
         elements.kontenProfil, 
         elements.kontenProteksi
     ];
-    
-    semuaKonten.forEach(konten => {
-        if (konten) konten.style.display = 'none';
+    semuaKonten.forEach(konten => { 
+        if (konten) konten.style.display = 'none'; 
     });
 
-    // 2. Hapus class 'active' dari SEMUA tombol sidebar
     const semuaTombol = [
         elements.btnDashboard, 
+        elements.btnPompa, 
         elements.btnRiwayat, 
         elements.btnGrafik, 
         elements.btnProfil, 
         elements.btnProteksi
     ];
-
-    semuaTombol.forEach(btn => {
-        if (btn) btn.classList.remove('active');
+    semuaTombol.forEach(btn => { 
+        if (btn) btn.classList.remove('active'); 
     });
 
-    // 3. Tampilkan HANYA yang diminta
-    halamanAktif.style.display = 'block';
-    tombolAktif.classList.add('active');
+    if (halamanAktif) halamanAktif.style.display = 'block';
+    if (tombolAktif) tombolAktif.classList.add('active');
     
-    // Scroll ke atas otomatis setiap ganti halaman
     window.scrollTo(0, 0);
 }
 
 function setupNavigation() {
-    // Navigasi Dashboard
-    elements.btnDashboard.onclick = () => {
-        gantiHalaman(elements.kontenDashboard, elements.btnDashboard, 'Dashboard Monitoring');
-    };
-
-    // Navigasi Riwayat
-    elements.btnRiwayat.onclick = () => {
-        gantiHalaman(elements.kontenRiwayat, elements.btnRiwayat, 'Riwayat Data');
-        muatRiwayat();
-    };
-
-    // Navigasi Grafik
-    elements.btnGrafik.onclick = () => {
-        gantiHalaman(elements.kontenGrafik, elements.btnGrafik, 'Grafik Analisis');
-        muatGrafik();
-    };
-
-    // Navigasi Profil
-    elements.btnProfil.onclick = () => {
-        gantiHalaman(elements.kontenProfil, elements.btnProfil, 'Profil Pengembang');
-    };
-
-    // Navigasi Proteksi
-    elements.btnProteksi.onclick = () => {
-        gantiHalaman(elements.kontenProteksi, elements.btnProteksi, 'Sistem Proteksi INA226');
-    };
+    if(elements.btnDashboard) elements.btnDashboard.onclick = () => gantiHalaman(elements.kontenDashboard, elements.btnDashboard);
+    if(elements.btnPompa) elements.btnPompa.onclick = () => gantiHalaman(elements.kontenPompa, elements.btnPompa); 
+    if(elements.btnRiwayat) elements.btnRiwayat.onclick = () => { gantiHalaman(elements.kontenRiwayat, elements.btnRiwayat); muatRiwayat(); };
+    if(elements.btnGrafik) elements.btnGrafik.onclick = () => { gantiHalaman(elements.kontenGrafik, elements.btnGrafik); muatGrafik(); };
+    if(elements.btnProfil) elements.btnProfil.onclick = () => gantiHalaman(elements.kontenProfil, elements.btnProfil);
+    if(elements.btnProteksi) elements.btnProteksi.onclick = () => gantiHalaman(elements.kontenProteksi, elements.btnProteksi);
 }
 
-// 4. FUNGSI DATA (REAL-TIME & RIWAYAT)
-
-// Pindahkan variabel perhitungan ke sini agar aman (Hanya sekali deklarasi)
-let totalWh = 0;
-let waktuMulai = null;
-const DAYA_POMPA = 12; 
-
+// 4. FUNGSI DATA
 function listenToData() {
-    database.ref('monitoring').on('value', (snapshot) => {
+    database.ref('monitoring_skripsi').on('value', (snapshot) => {
         const data = snapshot.val();
         if (data) {
-            // --- 1. Update Sensor Standar ---
-            elements.suhu.innerText = data.suhu || "0";
-            elements.phAir.innerText = data.phAir || "0";
-            elements.kelembapan.innerText = data.kelembapan || "0";
+            if(elements.suhu) elements.suhu.innerText = parseFloat(data.suhu || 0).toFixed(2);
+            if(elements.phAir) elements.phAir.innerText = parseFloat(data.phAir || 0).toFixed(1);
             
-            // --- 2. Update Panel Surya ---
-            elements.panelWatt.innerText = (data.panelWatt || "0") + " W";
-            elements.panelVolt.innerText = (data.panelVolt || "0") + " V";
-            elements.panelAmpere.innerText = (data.panelAmpere || "0") + " A";
+            if(elements.kelembapan1) elements.kelembapan1.innerText = data.kelembapan1 || "0";
+            if(elements.kelembapan2) elements.kelembapan2.innerText = data.kelembapan2 || "0";
+            if(elements.lux) elements.lux.innerText = data.lux || "0";
+
+            if(elements.frekuensiAir) elements.frekuensiAir.innerText = parseFloat(data.frekuensi || 0).toFixed(2);
+            if(elements.lajuAliran) elements.lajuAliran.innerText = parseFloat(data.lajuAliran || 0).toFixed(2);
+            if(elements.debitAir) elements.debitAir.innerText = parseFloat(data.debitAir || 0).toFixed(2);
             
-            // --- 3. Update Baterai ---
-            elements.bateraiPersen.innerText = (data.bateraiPersen || "0") + " %";
-            elements.bateraiVolt.innerText = (data.bateraiVolt || "0") + " V (Input)";
+            // --- LOGIKA BATERAI ---
+            const vBatt = parseFloat(data.bateraiVolt || 0);
+            const voltMaksimal = 27.2; 
+            const voltMinimal = 21.6;
+            
+            let persen = ((vBatt - voltMinimal) / (voltMaksimal - voltMinimal)) * 100;
+            persen = Math.max(0, Math.min(100, persen)); 
+            
+            if(elements.bateraiPersen) elements.bateraiPersen.innerText = Math.round(persen) + " %";
+            if(elements.bateraiVolt) elements.bateraiVolt.innerText = vBatt.toFixed(2) + " V";
+            if(elements.pompaWh) elements.pompaWh.innerText = parseFloat(data.pompaWh || 0).toFixed(2) + " Wh";
 
-            // --- 4. Logika Status Pompa & Perhitungan Wh ---
-            const statusPompa = data.pompa;
-            if (statusPompa === "ON" || statusPompa === "NYALA") {
-                elements.statusPompa.innerText = "NYALA";
-                elements.cardPompa.style.backgroundColor = "#2ecc71";
-                elements.statusPompa.style.color = "white";
+            const isNyala = (data.pompa === "ON" || data.pompa === "NYALA");
+            if (elements.statusPompa) elements.statusPompa.innerText = isNyala ? "NYALA" : "MATI";
+            if (elements.cardPompa) {
+                elements.cardPompa.style.backgroundColor = isNyala ? "#2ecc71" : "white";
+                elements.statusPompa.style.color = isNyala ? "white" : "#2c3e50";
+            }
 
-                if (waktuMulai === null) waktuMulai = Date.now();
-                let durasiDetik = (Date.now() - waktuMulai) / 1000;
-                let WhBerjalan = totalWh + (DAYA_POMPA * (durasiDetik / 3600));
-                elements.pompaWh.innerText = WhBerjalan.toFixed(2) + " Wh";
-            } else {
-                elements.statusPompa.innerText = "MATI";
-                elements.cardPompa.style.backgroundColor = "white";
-                elements.statusPompa.style.color = "#2c3e50";
+            let watt = isNyala ? parseFloat(data.daya || 0).toFixed(2) : "0.00";
+            let ampere = isNyala ? parseFloat(data.arus || 0).toFixed(2) : "0.00";
+            
+            if (elements.dayaAktifPompa) elements.dayaAktifPompa.innerText = watt + " W";
+            if (elements.detailKelistrikan) elements.detailKelistrikan.innerText = vBatt.toFixed(2) + " V | " + ampere + " A";
 
-                if (waktuMulai !== null) {
-                    let durasiJam = (Date.now() - waktuMulai) / 3600000;
-                    totalWh += (DAYA_POMPA * durasiJam);
-                    waktuMulai = null;
+            // ====================================================================
+            // LOGIKA SISTEM PROTEKSI (MODIFIKASI BARU)
+            // ====================================================================
+            const nilaiAmpere = parseFloat(ampere);
+
+            // 1. Proteksi Arus Ekstrem (> 40 Ampere)
+            if (elements.statusArusEkstrem && elements.cardArusEkstrem) {
+                if (nilaiAmpere > 30) {
+                    elements.statusArusEkstrem.innerText = "BAHAYA";
+                    elements.cardArusEkstrem.style.backgroundColor = "#e74c3c"; // Merah
+                    elements.cardArusEkstrem.style.color = "white";
+                } else {
+                    elements.statusArusEkstrem.innerText = "NORMAL";
+                    elements.cardArusEkstrem.style.backgroundColor = "white";
+                    elements.cardArusEkstrem.style.color = "#2c3e50";
                 }
-                elements.pompaWh.innerText = totalWh.toFixed(2) + " Wh";
             }
 
-            // --- 5. LOGIKA PROTEKSI (INA226) ---
-            const arus = parseFloat(data.panelAmpere) || 0;
-            const voltase = parseFloat(data.bateraiVolt) || 0;
-
-            // Arus Berlebih (> 3.5A)
-            if (arus > 3.5) {
-                elements.statusArusLebih.innerText = "BAHAYA";
-                elements.cardArusLebih.style.backgroundColor = "#e74c3c";
-                elements.statusArusLebih.style.color = "white";
-            } else {
-                elements.statusArusLebih.innerText = "AMAN";
-                elements.cardArusLebih.style.backgroundColor = "white";
-                elements.statusArusLebih.style.color = "#2ecc71";
+            // 2. Peringatan Baterai (< 24 Volt, tapi tidak nol)
+            if (elements.statusPeringatanBaterai && elements.cardPeringatanBaterai) {
+                if (vBatt > 0 && vBatt < 24) {
+                    elements.statusPeringatanBaterai.innerText = "LOW VOLT";
+                    elements.cardPeringatanBaterai.style.backgroundColor = "#f39c12"; // Oranye
+                    elements.cardPeringatanBaterai.style.color = "white";
+                } else {
+                    elements.statusPeringatanBaterai.innerText = "AMAN";
+                    elements.cardPeringatanBaterai.style.backgroundColor = "white";
+                    elements.cardPeringatanBaterai.style.color = "#2c3e50";
+                }
             }
 
-            // Arus Ekstrem (> 4.5A)
-            if (arus > 4.5) {
-                elements.statusArusEkstrem.innerText = "SANGAT TINGGI";
-                elements.cardArusEkstrem.style.backgroundColor = "#c0392b";
-                elements.statusArusEkstrem.style.color = "white";
-            } else {
-                elements.statusArusEkstrem.innerText = "NORMAL";
-                elements.cardArusEkstrem.style.backgroundColor = "white";
-                elements.statusArusEkstrem.style.color = "#2ecc71";
-            }
-
-            // BMS Cut-off (< 11.0V)
-            if (voltase < 11.0) {
-                elements.statusBms.innerText = "TERPUTUS (LOW)";
-                elements.cardBms.style.backgroundColor = "#e74c3c";
-                elements.statusBms.style.color = "white";
-            } else {
-                elements.statusBms.innerText = "TERHUBUNG";
-                elements.cardBms.style.backgroundColor = "white";
-                elements.statusBms.style.color = "#2ecc71";
+            // 3. Status Baterai (Terputus jika di bawah 5 Volt)
+            if (elements.statusBms && elements.cardStatusBms) {
+                if (vBatt < 5) {
+                    elements.statusBms.innerText = "TERPUTUS";
+                    elements.cardStatusBms.style.backgroundColor = "#e74c3c"; // Merah
+                    elements.cardStatusBms.style.color = "white";
+                } else {
+                    elements.statusBms.innerText = "TERHUBUNG";
+                    elements.cardStatusBms.style.backgroundColor = "white"; // Sesuai warna awal
+                    elements.cardStatusBms.style.color = "#2c3e50";
+                }
             }
         }
     });
 }
 
+// 5. RIWAYAT & GRAFIK
 function muatRiwayat() {
-    const tgl = new Date().toISOString().split('T')[0];
-    database.ref(`logs/${tgl}`).limitToLast(10).on('value', (snapshot) => {
+    if (elements.inputTanggal && !elements.inputTanggal.value) {
+        elements.inputTanggal.value = new Date().toLocaleDateString('en-CA');
+    }
+
+    const dateStr = elements.inputTanggal ? elements.inputTanggal.value : new Date().toLocaleDateString('en-CA');
+    
+    database.ref('logs_skripsi').off(); 
+
+    database.ref(`logs_skripsi/${dateStr}`).limitToLast(50).on('value', (snapshot) => {
         const data = snapshot.val();
+        let html = '';
         if (data) {
-            let html = '';
-            const keys = Object.keys(data).reverse();
-            keys.forEach(waktu => {
-                const item = data[waktu];
-                const jam = waktu.match(/.{1,2}/g).join(':');
-                const statusPompa = item.pompa || "OFF";
-                const warnaStatus = (statusPompa === "ON" || statusPompa === "NYALA") ? "#2ecc71" : "#e74c3c";
+            Object.keys(data).reverse().forEach(id => {
+                const item = data[id];
+                const jamTampil = item.waktu || "00:00:00";
+                const isNyala = (item.pompa === "ON" || item.pompa === "NYALA");
 
-               html += `
-    <tr>
-        <td style="padding: 12px; border-bottom: 1px solid #eee;">${jam}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.suhu}°C</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.phAir}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.kelembapan}%</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.panelWatt}W</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee; color: ${warnaStatus}; font-weight: bold;">${statusPompa}</td>
-        
-        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.pompaWh || "0.00"} Wh</td>
-    </tr>`;
+                html += `<tr>
+                    <td style="padding:12px; border-bottom:1px solid #eee;">${jamTampil}</td>
+                    <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.suhu || 0).toFixed(2)}°C</td>
+                    <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.phAir || 0).toFixed(1)}</td>
+                    <td style="padding:12px; border-bottom:1px solid #eee;">T1: ${item.kelembapan1 || 0}%<br>T2: ${item.kelembapan2 || 0}%</td>
+                    <td style="padding:12px; border-bottom:1px solid #eee;">${item.lux || 0} Lx</td>
+                    <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.bateraiVolt || 0).toFixed(2)} V</td>
+                    <td style="padding:12px; border-bottom:1px solid #eee; color:${isNyala ? '#2ecc71' : '#e74c3c'}; font-weight:bold;">${item.pompa || 'MATI'}</td>
+                    <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.pompaWh || 0).toFixed(2)} Wh</td>
+                </tr>`;
             });
-            elements.tabelRiwayat.innerHTML = html;
+            if(elements.tabelRiwayat) elements.tabelRiwayat.innerHTML = html;
         } else {
-            elements.tabelRiwayat.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Belum ada data riwayat hari ini.</td></tr>';
+            if(elements.tabelRiwayat) elements.tabelRiwayat.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#7f8c8d;">Belum ada data untuk tanggal <b>${dateStr}</b>.</td></tr>`;
         }
-    });
-}
-
-// 5. SIMULASI & WAKTU
-function startSimulasi() {
-    setInterval(() => {
-        const sekarang = new Date();
-        const tgl = sekarang.toISOString().split('T')[0];
-        const wkt = sekarang.toTimeString().split(' ')[0].replace(/:/g, '');
-
-        const dataFiktif = {
-            suhu: (25 + Math.random() * 7).toFixed(1),
-            phAir: (6.0 + Math.random() * 0.8).toFixed(1),
-            kelembapan: Math.floor(65 + Math.random() * 15),
-            panelWatt: (50 + Math.random() * 20).toFixed(1),
-            panelVolt: (12.2 + Math.random() * 1).toFixed(1),
-            panelAmpere: (3.0 + Math.random() * 1).toFixed(2),
-            bateraiPersen: Math.floor(85 + Math.random() * 10),
-            bateraiVolt: (12.8 + Math.random() * 0.5).toFixed(1),
-            pompa: Math.random() > 0.5 ? "ON" : "OFF", // Pastikan ada koma di sini
-            
-            // TAMBAHKAN BARIS INI:
-            pompaWh: totalWh.toFixed(2) 
-        };
-
-        database.ref('monitoring').set(dataFiktif);
-        database.ref(`logs/${tgl}/${wkt}`).set(dataFiktif);
-    }, 5000);
-}
-
-function updateTime() {
-    setInterval(() => {
-        elements.time.innerText = new Date().toLocaleString('id-ID');
-    }, 1000);
-}
-
-// 6. INITIALIZE & GRAFIK
-document.addEventListener('DOMContentLoaded', () => {
-    setupNavigation();
-    listenToData();
-    updateTime();
-    startSimulasi();
-});
-
-function inisialisasiGrafik(idCanvas, label, warna) {
-    const canvas = document.getElementById(idCanvas);
-    if (!canvas) return null;
-    const ctx = canvas.getContext('2d');
-    return new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: label,
-                data: [],
-                borderColor: warna,
-                backgroundColor: warna + '33',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
     });
 }
 
@@ -303,51 +227,83 @@ function muatGrafik() {
     if (!chartSuhu) {
         chartSuhu = inisialisasiGrafik('grafikSuhu', 'Suhu (°C)', '#e74c3c');
         chartPh = inisialisasiGrafik('grafikPh', 'pH Air', '#3498db');
-        chartKelembapan = inisialisasiGrafik('grafikKelembapan', 'Kelembapan (%)', '#2ecc71');
-        chartVolt = inisialisasiGrafik('grafikVolt', 'Voltase Panel (V)', '#f1c40f');
+        chartKelembapan = inisialisasiGrafik('grafikKelembapan', 'Kelembapan Tanah 1 (%)', '#2ecc71'); 
+        chartKelembapan2 = inisialisasiGrafik('grafikKelembapan2', 'Kelembapan Tanah 2 (%)', '#1abc9c'); 
+        chartLux = inisialisasiGrafik('grafikLux', 'Intensitas Cahaya (Lux)', '#f39c12'); 
+        chartVolt = inisialisasiGrafik('grafikVolt', 'Voltase Baterai (V)', '#f1c40f');
     }
 
-    const tgl = new Date().toISOString().split('T')[0];
-    database.ref(`logs/${tgl}`).limitToLast(15).on('value', (snapshot) => {
+    const dateStr = elements.inputTanggal ? elements.inputTanggal.value : new Date().toLocaleDateString('en-CA');
+    
+    database.ref(`logs_skripsi/${dateStr}`).limitToLast(24).on('value', (snapshot) => {
         const data = snapshot.val();
+        
         if (data) {
-            const labels = [], dSuhu = [], dPh = [], dLembap = [], dVolt = [];
-            Object.keys(data).forEach(wkt => {
-                const item = data[wkt];
-                labels.push(wkt.match(/.{1,2}/g).join(':'));
-                dSuhu.push(parseFloat(item.suhu) || 0);
-                dPh.push(parseFloat(item.phAir) || 0);
-                dLembap.push(parseFloat(item.kelembapan) || 0);
-                dVolt.push(parseFloat(item.panelVolt) || 0);
+            const labels = [], dSuhu = [], dPh = [], dLembap1 = [], dLembap2 = [], dLux = [], dVolt = [];
+
+            Object.keys(data).forEach((id) => {
+                const item = data[id];
+                const waktuFull = item.waktu || "00:00";
+                const waktuSingkat = waktuFull.substring(0, 5); 
+
+                labels.push(waktuSingkat);
+                dSuhu.push(parseFloat(item.suhu || 0));
+                dPh.push(parseFloat(item.phAir || 0));
+                dLembap1.push(parseFloat(item.kelembapan1 || 0));
+                dLembap2.push(parseFloat(item.kelembapan2 || 0));
+                dLux.push(parseFloat(item.lux || 0)); 
+                dVolt.push(parseFloat(item.bateraiVolt || 0));
             });
 
-            if(chartSuhu) { chartSuhu.data.labels = labels; chartSuhu.data.datasets[0].data = dSuhu; chartSuhu.update(); }
-            if(chartPh) { chartPh.data.labels = labels; chartPh.data.datasets[0].data = dPh; chartPh.update(); }
-            if(chartKelembapan) { chartKelembapan.data.labels = labels; chartKelembapan.data.datasets[0].data = dLembap; chartKelembapan.update(); }
-            if(chartVolt) { chartVolt.data.labels = labels; chartVolt.data.datasets[0].data = dVolt; chartVolt.update(); }
+            if(chartSuhu) { chartSuhu.data.labels = labels; chartSuhu.data.datasets[0].data = dSuhu; chartSuhu.update('none'); }
+            if(chartPh) { chartPh.data.labels = labels; chartPh.data.datasets[0].data = dPh; chartPh.update('none'); }
+            if(chartKelembapan) { chartKelembapan.data.labels = labels; chartKelembapan.data.datasets[0].data = dLembap1; chartKelembapan.update('none'); }
+            if(chartKelembapan2) { chartKelembapan2.data.labels = labels; chartKelembapan2.data.datasets[0].data = dLembap2; chartKelembapan2.update('none'); }
+            if(chartLux) { chartLux.data.labels = labels; chartLux.data.datasets[0].data = dLux; chartLux.update('none'); }
+            if(chartVolt) { chartVolt.data.labels = labels; chartVolt.data.datasets[0].data = dVolt; chartVolt.update('none'); }
         }
     });
-}   
+}
 
-document.getElementById('btn-download-pdf').addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const tgl = new Date().toLocaleDateString('id-ID');
-
-    doc.setFontSize(16);
-    doc.text('LAPORAN MONITORING BIBIT BAWANG MERAH', 14, 20);
-    doc.setFontSize(11);
-    doc.setTextColor(100);
-    doc.text(`Tanggal Laporan: ${tgl}`, 14, 30);
-
-    doc.autoTable({
-        html: '#konten-riwayat table',
-        startY: 40,
-        theme: 'grid',
-        headStyles: { fillColor: [39, 174, 96] },
-        styles: { fontSize: 10, cellPadding: 3 },
+function inisialisasiGrafik(idCanvas, label, warna) {
+    const ctx = document.getElementById(idCanvas);
+    if (!ctx) return null;
+    return new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: label, data: [], borderColor: warna, fill: true, tension: 0.4 }] },
+        options: { responsive: true, maintainAspectRatio: false }
     });
+}
 
-    doc.save(`Laporan_Monitoring_${tgl.replace(/\//g, '-')}.pdf`);
+// 6. INITIALIZE
+document.addEventListener('DOMContentLoaded', () => {
+    setupNavigation();
+    listenToData();
+    
+    if (elements.inputTanggal) {
+        elements.inputTanggal.addEventListener('change', () => {
+            muatRiwayat();
+            if (elements.kontenGrafik.style.display === 'block') {
+                muatGrafik();
+            }
+        });
+    }
+
+    setInterval(() => { if(elements.time) elements.time.innerText = new Date().toLocaleString('id-ID'); }, 1000);
 });
 
+// 7. PDF EXPORT
+document.getElementById('btn-download-pdf').onclick = () => {
+    const dateStr = elements.inputTanggal ? elements.inputTanggal.value : new Date().toLocaleDateString('id-ID');
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFontSize(14);
+    doc.text(`LAPORAN MONITORING BIBIT BAWANG MERAH`, 14, 20);
+    doc.setFontSize(11);
+    doc.text(`Tanggal Laporan: ${dateStr}`, 14, 28);
+    
+    doc.autoTable({ html: '#konten-riwayat table', startY: 35 });
+    doc.save(`Laporan_Bawang_Merah_${dateStr}.pdf`);
+};
