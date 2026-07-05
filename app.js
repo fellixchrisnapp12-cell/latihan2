@@ -108,7 +108,7 @@ function listenToData() {
             
             if(elements.kelembapan1) elements.kelembapan1.innerText = data.kelembapan1 || "0";
             if(elements.kelembapan2) elements.kelembapan2.innerText = data.kelembapan2 || "0";
-            if(elements.lux) elements.lux.innerText = data.lux || "0";
+           if(elements.lux) elements.lux.innerText = Math.round(data.lux || 0).toLocaleString('id-ID');
 
             if(elements.frekuensiAir) elements.frekuensiAir.innerText = parseFloat(data.frekuensi || 0).toFixed(2);
             if(elements.lajuAliran) elements.lajuAliran.innerText = parseFloat(data.lajuAliran || 0).toFixed(2);
@@ -210,7 +210,7 @@ function muatRiwayat() {
                     <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.suhu || 0).toFixed(2)}°C</td>
                     <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.phAir || 0).toFixed(1)}</td>
                     <td style="padding:12px; border-bottom:1px solid #eee;">T1: ${item.kelembapan1 || 0}%<br>T2: ${item.kelembapan2 || 0}%</td>
-                    <td style="padding:12px; border-bottom:1px solid #eee;">${item.lux || 0} Lx</td>
+                    <td style="padding:12px; border-bottom:1px solid #eee;">${Math.round(item.lux || 0).toLocaleString('id-ID')} Lx</td>
                     <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.bateraiVolt || 0).toFixed(2)} V</td>
                     <td style="padding:12px; border-bottom:1px solid #eee; color:${isNyala ? '#2ecc71' : '#e74c3c'}; font-weight:bold;">${item.pompa || 'MATI'}</td>
                     <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.pompaWh || 0).toFixed(2)} Wh</td>
