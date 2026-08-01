@@ -198,37 +198,59 @@ function muatRiwayat() {
 
     database.ref(`logs_skripsi/${dateStr}`).limitToLast(50).on('value', (snapshot) => {
         const data = snapshot.val();
-        let html = '';
+        
         if (data) {
-            Object.keys(data).reverse().forEach(id => {
-                const item = data[id];
+            let tableRows = [];
+            
+            // Object.values digunakan untuk mengambil array dari data, lalu disortir berdasarkan waktu
+            const items = Object.values(data).sort((a, b) => {
+                const timeA = a.waktu || "00:00:00";
+                const timeB = b.waktu || "00:00:00";
+                return timeA.localeCompare(timeB);
+            });
+
+            items.forEach(item => {
                 const jamTampil = item.waktu || "00:00:00";
                 const isNyala = (item.pompa === "ON" || item.pompa === "NYALA");
 
-                // --- MODIFIKASI TAMPILAN STATUS POMPA ---
-                let teksPompa = `<span style="color:${isNyala ? '#2ecc71' : '#e74c3c'}; font-weight:bold;">${item.pompa || 'MATI'}</span>`;
-                
+                let displayKonsumsi = "-";
+                let displayDetailPompa = "";
+                let teksPompa = `<span style="color:${isNyala ? '#2ecc71' : '#e74c3c'}; font-weight:bold;">${isNyala ? 'NYALA' : 'MATI'}</span>`;
+
                 if (isNyala) {
-                    // Mengambil data kelistrikan dari Firebase (jika tidak ada, set ke 0)
-                    // Asumsi tegangan pompa menggunakan nilai bateraiVolt
+                    // 1. SAAT POMPA MENYALA (09:00 / 15:00)
+                    displayKonsumsi = "-"; 
+                    
                     const vPompa = parseFloat(item.bateraiVolt || 0).toFixed(2); 
                     const aPompa = parseFloat(item.arus || 0).toFixed(2);
                     const wPompa = parseFloat(item.daya || 0).toFixed(2);
                     
-                    // Mengambil durasi dari Firebase
-                    const durasi = item.durasi ? `${item.durasi} detik` : 'menunggu data...'; 
-                    
-                    // Menambahkan detail ke bawah status NYALA dengan desain minimalis
-                    teksPompa += `
+                    displayDetailPompa = `
                     <br>
                     <span style="font-size: 11px; color: #555; font-weight: normal; display: inline-block; margin-top: 4px; line-height: 1.4;">
-                        ⚡ ${vPompa}V | ${aPompa}A | ${wPompa}W<br>
-                        ⏱️ Durasi: ${durasi}
+                        ⚡ ${vPompa}V | ${aPompa}A | ${wPompa}W
                     </span>`;
+                    
+                } else {
+                    // 2. SAAT POMPA MATI
+                    // Cek apakah data ini adalah data "Event Mati" yang memiliki durasi & Wh
+                    if (item.durasi && item.pompaWh) {
+                        displayKonsumsi = parseFloat(item.pompaWh).toFixed(2) + " Wh";
+                        displayDetailPompa = `
+                        <br>
+                        <span style="font-size: 11px; color: #555; font-weight: normal; display: inline-block; margin-top: 4px; line-height: 1.4;">
+                            ⏱️ Durasi: ${item.durasi} detik
+                        </span>`;
+                    } else {
+                        // 3. KONDISI STANDBY BIASA (Jam 08:00, 10:00, 11:00, dst)
+                        displayKonsumsi = "-";
+                    }
                 }
-                // ----------------------------------------
 
-                html += `<tr>
+                teksPompa += displayDetailPompa;
+
+                // Push ke array
+                tableRows.push(`<tr>
                     <td style="padding:12px; border-bottom:1px solid #eee;">${jamTampil}</td>
                     <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.suhu || 0).toFixed(2)}°C</td>
                     <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.phAir || 0).toFixed(1)}</td>
@@ -236,15 +258,19 @@ function muatRiwayat() {
                     <td style="padding:12px; border-bottom:1px solid #eee;">${Math.round(item.lux || 0).toLocaleString('id-ID')} Lx</td>
                     <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.bateraiVolt || 0).toFixed(2)} V</td>
                     <td style="padding:12px; border-bottom:1px solid #eee;">${teksPompa}</td>
-                    <td style="padding:12px; border-bottom:1px solid #eee;">${parseFloat(item.pompaWh || 0).toFixed(2)} Wh</td>
-                </tr>`;
+                    <td style="padding:12px; border-bottom:1px solid #eee;"><b>${displayKonsumsi}</b></td>
+                </tr>`);
             });
+
+            // Balik urutan array (reverse) agar jam terbaru berada paling atas di tabel
+            const html = tableRows.reverse().join('');
             if(elements.tabelRiwayat) elements.tabelRiwayat.innerHTML = html;
+            
         } else {
             if(elements.tabelRiwayat) elements.tabelRiwayat.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#7f8c8d;">Belum ada data untuk tanggal <b>${dateStr}</b>.</td></tr>`;
         }
     });
-}   
+}
 
 function muatGrafik() {
     if (!chartSuhu) {
