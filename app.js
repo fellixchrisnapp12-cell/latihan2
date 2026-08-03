@@ -202,14 +202,14 @@ function muatRiwayat() {
         if (data) {
             let tableRows = [];
             
-            // Object.values digunakan untuk mengambil array dari data, lalu disortir berdasarkan waktu
+            // Urutkan data berdasarkan waktu (kronologis: 00:00 -> 23:00)
             const items = Object.values(data).sort((a, b) => {
                 const timeA = a.waktu || "00:00:00";
                 const timeB = b.waktu || "00:00:00";
                 return timeA.localeCompare(timeB);
             });
 
-            items.forEach(item => {
+            items.forEach((item, index) => {
                 const jamTampil = item.waktu || "00:00:00";
                 const isNyala = (item.pompa === "ON" || item.pompa === "NYALA");
 
@@ -218,33 +218,39 @@ function muatRiwayat() {
                 let teksPompa = `<span style="color:${isNyala ? '#2ecc71' : '#e74c3c'}; font-weight:bold;">${isNyala ? 'NYALA' : 'MATI'}</span>`;
 
                 if (isNyala) {
-                    // 1. SAAT POMPA MENYALA (09:00 / 15:00)
-                    displayKonsumsi = "-"; 
+                    // 1. SAAT POMPA MENYALA: Cari durasi & Wh di log MATI setelahnya
+                    let durasiVal = "menunggu data...";
+                    let whVal = "-";
+
+                    // Looping ke depan untuk mencari log MATI pasca penyiraman
+                    for (let i = index + 1; i < items.length; i++) {
+                        if ((items[i].pompa === "MATI" || items[i].pompa === "OFF") && items[i].durasi) {
+                            durasiVal = items[i].durasi + " detik";
+                            whVal = parseFloat(items[i].pompaWh || 0).toFixed(2) + " Wh";
+                            break; // Hentikan pencarian setelah ketemu
+                        } else if (items[i].pompa === "ON" || items[i].pompa === "NYALA") {
+                            break; // Stop jika malah ketemu siklus ON berikutnya (berarti belum selesai menyiram)
+                        }
+                    }
+                    
+                    displayKonsumsi = whVal;
                     
                     const vPompa = parseFloat(item.bateraiVolt || 0).toFixed(2); 
                     const aPompa = parseFloat(item.arus || 0).toFixed(2);
                     const wPompa = parseFloat(item.daya || 0).toFixed(2);
                     
+                    // Tampilkan Kelistrikan dan Durasi di bawah status NYALA
                     displayDetailPompa = `
                     <br>
                     <span style="font-size: 11px; color: #555; font-weight: normal; display: inline-block; margin-top: 4px; line-height: 1.4;">
-                        ⚡ ${vPompa}V | ${aPompa}A | ${wPompa}W
+                        ⚡ ${vPompa}V | ${aPompa}A | ${wPompa}W<br>
+                        ⏱️ Durasi: ${durasiVal}
                     </span>`;
                     
                 } else {
-                    // 2. SAAT POMPA MATI
-                    // Cek apakah data ini adalah data "Event Mati" yang memiliki durasi & Wh
-                    if (item.durasi && item.pompaWh) {
-                        displayKonsumsi = parseFloat(item.pompaWh).toFixed(2) + " Wh";
-                        displayDetailPompa = `
-                        <br>
-                        <span style="font-size: 11px; color: #555; font-weight: normal; display: inline-block; margin-top: 4px; line-height: 1.4;">
-                            ⏱️ Durasi: ${item.durasi} detik
-                        </span>`;
-                    } else {
-                        // 3. KONDISI STANDBY BIASA (Jam 08:00, 10:00, 11:00, dst)
-                        displayKonsumsi = "-";
-                    }
+                    // 2. SAAT POMPA MATI (termasuk sesaat setelah menyiram)
+                    // Tampil polos saja dengan strip (-)
+                    displayKonsumsi = "-";
                 }
 
                 teksPompa += displayDetailPompa;
